@@ -1,5 +1,7 @@
 # Programmable Secrets Skill
 
+[![HOL Registry skill badge](https://hol.org/registry/api/v1/skills/badge.svg?name=programmable-secrets&version=1.0.0&metric=version&style=for-the-badge&label=programmable-secrets)](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.0/SKILL.md)
+
 Standalone HCS-26 skill package for operating the Programmable Secrets protocol across Robinhood Chain Testnet and Arbitrum Sepolia.
 
 This repo exists so the skill package has its own canonical GitHub source, commit history, and publish workflow. That gives the published artifact a stable `repo` and `commit` stamp during HCS-26 release packaging.
@@ -17,8 +19,10 @@ Core implementation repo:
 - [hashgraph-online/programmable-secrets-contracts](https://github.com/hashgraph-online/programmable-secrets-contracts)
 
 Published skill package files:
-- [SKILL.md](./SKILL.md)
-- [skill.json](./skill.json)
+- [Published SKILL.md](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.0/SKILL.md)
+- [Published skill.json](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.0/manifest)
+- [Repo SKILL.md](./SKILL.md)
+- [Repo skill.json](./skill.json)
 - [schema](./schemas/skill.schema.json)
 
 ## Primary CLI
