@@ -11,6 +11,8 @@ on:
       - skill.json
       - package.json
       - schemas/**
+      - .github/actions/skills-publish/**
+      - .github/workflows/skills-publish.yml
   workflow_dispatch:
     inputs:
       version:
@@ -100,7 +102,7 @@ jobs:
           fi
           echo "api_base_url=$API_BASE_URL" >> "$GITHUB_OUTPUT"
       - name: Publish skill package
-        uses: hashgraph-online/skill-publish@main
+        uses: ./.github/actions/skills-publish
         with:
           api-base-url: ${{ steps.target.outputs.api_base_url }}
           api-key: ${{ secrets.RB_API_KEY }}
