@@ -41,20 +41,16 @@ jobs:
           const fs = require('node:fs');
           const Ajv2020 = require('ajv/dist/2020').default;
           const addFormats = require('ajv-formats').default;
-
           const schema = JSON.parse(fs.readFileSync('schemas/skill.schema.json', 'utf8'));
           const manifest = JSON.parse(fs.readFileSync('skill.json', 'utf8'));
-
           const ajv = new Ajv2020({ allErrors: true, strict: false });
           addFormats(ajv);
           const validate = ajv.compile(schema);
           const ok = validate(manifest);
-
           if (!ok) {
             console.error(JSON.stringify(validate.errors, null, 2));
             process.exit(1);
           }
-
           console.log('Schema validation passed for skill.json');
           NODE
       - name: Prepare publish package
@@ -75,13 +71,11 @@ jobs:
             echo "skill.json must include a non-empty name"
             exit 1
           fi
-
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           if [[ -z "$PACKAGE_VERSION" ]]; then
             echo "package.json must include version"
             exit 1
           fi
-
           VERSION_INPUT="${{ github.event.inputs.version }}"
           if [[ "${{ github.event_name }}" == "release" && -z "$VERSION_INPUT" ]]; then
             VERSION_INPUT="${GITHUB_REF_NAME#v}"
@@ -89,7 +83,6 @@ jobs:
           if [[ -z "$VERSION_INPUT" ]]; then
             VERSION_INPUT="$PACKAGE_VERSION"
           fi
-
           echo "name=$SKILL_NAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION_INPUT" >> "$GITHUB_OUTPUT"
       - name: Resolve broker API URL
@@ -107,7 +100,7 @@ jobs:
           fi
           echo "api_base_url=$API_BASE_URL" >> "$GITHUB_OUTPUT"
       - name: Publish skill package
-        uses: hashgraph-online/hashgraph-online/.github/actions/skills-publish@main
+        uses: hashgraph-online/skill-publish@main
         with:
           api-base-url: ${{ steps.target.outputs.api_base_url }}
           api-key: ${{ secrets.RB_API_KEY }}
