@@ -62,22 +62,21 @@ PROGRAMMABLE_SECRETS_ENV_OUTPUT_PATH=/tmp/programmable-secrets.env npx programma
 
 Robinhood testnet is the default workflow network.
 
-Direct identity flow:
+Direct Robinhood marketplace flow:
 
 ```bash
 npx programmable-secret flow:direct
 ```
 
+Direct Arbitrum UAID flow:
+
+```bash
+PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:uaid
+```
+
 Registry Broker-backed identity flow:
 
 ```bash
-npx programmable-secret flow:broker
-```
-
-To target Arbitrum Sepolia:
-
-```bash
-PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:direct
 PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:broker
 ```
 
@@ -87,6 +86,7 @@ Show deployed addresses:
 
 ```bash
 npx programmable-secret contracts
+npx programmable-secret evaluators list
 ```
 
 Operate datasets:
@@ -152,6 +152,6 @@ npx programmable-secret krs decrypt --bundle-file bundle.json
 - Treat `deployments/robinhood-testnet.json` and `deployments/arbitrum-sepolia.json` as the source of truth for deployed addresses.
 - Do not read `.env` files directly. Use `doctor` and `env-bootstrap`.
 - Use `ETH_PK_2` for provider-side writes and `ETH_PK` for agent-side writes unless you intentionally override with `--wallet`.
-- Prefer Robinhood testnet for the primary operator path and Arbitrum Sepolia for ERC-8004 verification when needed.
+- Prefer Robinhood testnet for the primary marketplace path and Arbitrum Sepolia for ERC-8004 verification when needed.
 - Prefer `--json` or `--agent-safe` when another agent or tool will consume the output.
 - Use `preview` before any state-changing command in an automated workflow.

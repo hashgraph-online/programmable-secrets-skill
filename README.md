@@ -13,10 +13,11 @@ This repo exists so the skill package has its own canonical GitHub source, commi
 
 The skill is designed for agents and operators that need to:
 - register encrypted datasets
+- inspect evaluator modules and runtime witness requirements
 - create timebound and UAID-gated policies
 - purchase policies and verify receipts
 - inspect dataset and policy state onchain
-- run the guided Robinhood and Arbitrum operator workflows
+- run the guided Robinhood marketplace and Arbitrum identity workflows
 
 Core implementation repo:
 - [hashgraph-online/programmable-secrets-contracts](https://github.com/hashgraph-online/programmable-secrets-contracts)
@@ -30,21 +31,23 @@ Published skill package files:
 
 ## Primary CLI
 
-The underlying operator CLI lives in the contracts repo and is exposed through GitHub `npx` execution:
+The underlying operator CLI is published on npm:
 
 ```bash
-npx github:hashgraph-online/programmable-secrets-contracts help
+npx programmable-secret help
 ```
 
 Common commands:
 
 ```bash
-npx github:hashgraph-online/programmable-secrets-contracts start
-npx github:hashgraph-online/programmable-secrets-contracts doctor
-npx github:hashgraph-online/programmable-secrets-contracts contracts
-npx github:hashgraph-online/programmable-secrets-contracts datasets list
-npx github:hashgraph-online/programmable-secrets-contracts policies list
-npx github:hashgraph-online/programmable-secrets-contracts flow:direct
+npx programmable-secret start
+npx programmable-secret doctor
+npx programmable-secret contracts
+npx programmable-secret evaluators list
+npx programmable-secret datasets list
+npx programmable-secret policies list
+npx programmable-secret flow:direct
+PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:uaid
 ```
 
 ## Networks
@@ -52,10 +55,11 @@ npx github:hashgraph-online/programmable-secrets-contracts flow:direct
 Default network:
 - Robinhood Chain Testnet
 
-Override network:
+Arbitrum identity override:
 
 ```bash
-PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx github:hashgraph-online/programmable-secrets-contracts flow:direct
+PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:uaid
+PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:broker
 ```
 
 ## Publish Workflow
