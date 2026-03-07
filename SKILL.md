@@ -1,7 +1,7 @@
 ---
 name: programmable-secrets
 description: Use this skill when operating the Programmable Secrets contracts and released CLI for dataset registration, policy creation, preview-first writes, UAID-gated purchases, receipt checks, Robinhood or Arbitrum testnet workflows, local KRS helpers, profiles, templates, and machine-readable agent execution.
-homepage: https://github.com/hashgraph-online/programmable-secrets-contracts
+homepage: https://ps.hol.org
 license: Apache-2.0
 ---
 
@@ -11,6 +11,9 @@ Use this skill when you need to operate the Programmable Secrets contract stack 
 
 Core repository:
 - https://github.com/hashgraph-online/programmable-secrets-contracts
+
+Live app:
+- https://ps.hol.org
 
 Primary CLI entrypoint:
 ```bash

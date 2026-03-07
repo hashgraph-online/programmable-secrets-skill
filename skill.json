@@ -1,9 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/schemas/skill.schema.json",
   "name": "programmable-secrets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Operate Programmable Secrets dataset registration, policy creation, purchase, receipt verification, and UAID-gated access workflows for Robinhood Chain Testnet and Arbitrum Sepolia.",
-  "homepage": "https://github.com/hashgraph-online/programmable-secrets-contracts",
+  "homepage": "https://ps.hol.org",
   "author": "Hashgraph Online <hello@hashgraphonline.com>",
   "license": "Apache-2.0",
   "repository": {
@@ -39,7 +39,7 @@
     "files": {
       "skill": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/SKILL.md",
       "metadata": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/skill.json",
-      "docs": "https://github.com/hashgraph-online/programmable-secrets-contracts"
+      "docs": "https://ps.hol.org"
     }
   },
   "api": {
