@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/schemas/skill.schema.json",
+  "name": "programmable-secrets",
+  "version": "1.0.0",
+  "description": "Operate Programmable Secrets dataset registration, policy creation, purchase, receipt verification, and UAID-gated access workflows for Robinhood Chain Testnet and Arbitrum Sepolia.",
+  "homepage": "https://github.com/hashgraph-online/programmable-secrets-contracts",
+  "author": "Hashgraph Online <hello@hashgraphonline.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hashgraph-online/programmable-secrets-skill"
+  },
+  "keywords": [
+    "programmable-secrets",
+    "finance-agent",
+    "robinhood-chain",
+    "arbitrum",
+    "erc-8004",
+    "dataset-licensing",
+    "policy-access"
+  ],
+  "skill": {
+    "name": "programmable-secrets",
+    "emoji": "🔐",
+    "category": "finance",
+    "api_base": "https://github.com/hashgraph-online/programmable-secrets-contracts",
+    "protocols": [
+      "erc-8004",
+      "eip155",
+      "a2a"
+    ],
+    "capabilities": [
+      "dataset-registration",
+      "policy-creation",
+      "policy-purchase",
+      "receipt-verification",
+      "uaid-gated-access"
+    ],
+    "files": {
+      "skill": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/SKILL.md",
+      "metadata": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/skill.json",
+      "docs": "https://github.com/hashgraph-online/programmable-secrets-contracts"
+    }
+  },
+  "api": {
+    "base_url": "https://github.com/hashgraph-online/programmable-secrets-contracts",
+    "authentication": {
+      "type": "local-wallet-and-env",
+      "header": "N/A",
+      "format": "ETH_PK and ETH_PK_2"
+    },
+    "endpoints": {
+      "help": "npx github:hashgraph-online/programmable-secrets-contracts help",
+      "contracts": "npx github:hashgraph-online/programmable-secrets-contracts contracts",
+      "datasets": "npx github:hashgraph-online/programmable-secrets-contracts datasets <subcommand>",
+      "policies": "npx github:hashgraph-online/programmable-secrets-contracts policies <subcommand>",
+      "purchase": "npx github:hashgraph-online/programmable-secrets-contracts purchase --policy-id <id>",
+      "receipts": "npx github:hashgraph-online/programmable-secrets-contracts receipts get --receipt-id <id>",
+      "identity": "npx github:hashgraph-online/programmable-secrets-contracts identity register --agent-uri <uri>"
+    }
+  },
+  "integrations": {
+    "npx": {
+      "supported": true,
+      "install": "npx github:hashgraph-online/programmable-secrets-contracts help"
+    },
+    "cursor": {
+      "supported": true,
+      "skill_file": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/SKILL.md"
+    }
+  }
+}
