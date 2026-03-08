@@ -18,8 +18,11 @@ Live app:
 Canonical UAID specification:
 - HCS-14 (pinned): https://github.com/hiero-ledger/hiero-consensus-specifications/blob/675f6d06450c72c63f52191eb090e7b2bdbb405c/docs/standards/hcs-14.md
 
-Wallet-backed UAIDs in this stack should use the HCS-14 + `standards-sdk` form:
+Use the UAID form that matches the identity source:
+- Wallet-backed provider identities should use the HCS-14 + `standards-sdk` form:
 - `uaid:did:pkh:eip155:<chainId>:<checksumAddress>;nativeId=eip155:<chainId>:<checksumAddress>`
+- Agents already registered in ERC-8004 should use the AID method:
+- `uaid:aid:<agent-name>;uid=<chainId>:<agentId>;registry=erc-8004;proto=erc-8004;nativeId=<chainId>:<agentId>`
 
 Primary CLI entrypoint:
 ```bash
