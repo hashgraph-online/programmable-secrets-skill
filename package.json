@@ -1,7 +1,7 @@
 {
   "name": "programmable-secrets-skill",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Standalone HCS-26 skill package for Programmable Secrets.",
   "license": "Apache-2.0"
 }

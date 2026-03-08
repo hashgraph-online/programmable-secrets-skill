@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/schemas/skill.schema.json",
   "name": "programmable-secrets",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Operate Programmable Secrets dataset registration, policy creation, purchase, receipt verification, and UAID-gated access workflows for Robinhood Chain Testnet and Arbitrum Sepolia.",
   "homepage": "https://ps.hol.org",
   "author": "Hashgraph Online <hello@hashgraphonline.com>",
@@ -50,19 +50,19 @@
       "format": "ETH_PK and ETH_PK_2"
     },
     "endpoints": {
-      "help": "npx github:hashgraph-online/programmable-secrets-contracts help",
-      "contracts": "npx github:hashgraph-online/programmable-secrets-contracts contracts",
-      "datasets": "npx github:hashgraph-online/programmable-secrets-contracts datasets <subcommand>",
-      "policies": "npx github:hashgraph-online/programmable-secrets-contracts policies <subcommand>",
-      "purchase": "npx github:hashgraph-online/programmable-secrets-contracts purchase --policy-id <id>",
-      "receipts": "npx github:hashgraph-online/programmable-secrets-contracts receipts get --receipt-id <id>",
-      "identity": "npx github:hashgraph-online/programmable-secrets-contracts identity register --agent-uri <uri>"
+      "help": "npx programmable-secret help",
+      "contracts": "npx programmable-secret contracts",
+      "datasets": "npx programmable-secret datasets <subcommand>",
+      "policies": "npx programmable-secret policies <subcommand>",
+      "purchase": "npx programmable-secret purchase --policy-id <id>",
+      "receipts": "npx programmable-secret receipts get --receipt-id <id>",
+      "identity": "npx programmable-secret identity register --agent-uri <uri>"
     }
   },
   "integrations": {
     "npx": {
       "supported": true,
-      "install": "npx github:hashgraph-online/programmable-secrets-contracts help"
+      "install": "npx programmable-secret help"
     },
     "cursor": {
       "supported": true,

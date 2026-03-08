@@ -1,6 +1,6 @@
 # Programmable Secrets Skill
 
-[![HOL Registry skill badge](https://hol.org/registry/api/v1/skills/badge.svg?name=programmable-secrets&version=1.0.1&metric=version&style=for-the-badge&label=programmable-secrets)](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.1/SKILL.md)
+[![HOL Registry skill badge](https://hol.org/registry/api/v1/skills/badge.svg?name=programmable-secrets&version=1.0.2&metric=version&style=for-the-badge&label=programmable-secrets)](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.2/SKILL.md)
 
 Standalone HCS-26 skill package for operating the Programmable Secrets protocol across Robinhood Chain Testnet and Arbitrum Sepolia.
 
@@ -23,8 +23,8 @@ Core implementation repo:
 - [hashgraph-online/programmable-secrets-contracts](https://github.com/hashgraph-online/programmable-secrets-contracts)
 
 Published skill package files:
-- [Published SKILL.md](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.1/SKILL.md)
-- [Published skill.json](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.1/manifest)
+- [Published SKILL.md](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.2/SKILL.md)
+- [Published skill.json](https://hol.org/registry/api/v1/skills/programmable-secrets%401.0.2/manifest)
 - [Repo SKILL.md](./SKILL.md)
 - [Repo skill.json](./skill.json)
 - [schema](./schemas/skill.schema.json)
@@ -42,10 +42,13 @@ Common commands:
 ```bash
 npx programmable-secret start
 npx programmable-secret doctor
+npx programmable-secret --help
 npx programmable-secret contracts
 npx programmable-secret evaluators list
 npx programmable-secret datasets list
 npx programmable-secret policies list
+npx programmable-secret preview purchase --policy-id 1
+npx programmable-secret datasets list --agent-safe
 npx programmable-secret flow:direct
 PROGRAMMABLE_SECRETS_NETWORK=arbitrum-sepolia npx programmable-secret flow:uaid
 ```
