@@ -30,6 +30,10 @@ const parseNumber = (value, fallback) => {
 };
 
 const DEFAULT_API_BASE_URL = 'https://hol.org/registry/api/v1';
+const DEFAULT_SKILL_PUBLISH_BASE_URLS = [
+  'https://registry.hashgraphonline.com/api/v1',
+  'https://hol.org/registry/api/v1',
+];
 
 const normalizeApiBaseUrl = (value) => {
   const trimmed = String(value ?? '').trim();
@@ -174,6 +178,68 @@ const requestJson = async (params) => {
     );
   }
   return response.json();
+};
+
+const buildCandidateApiBaseUrls = (preferredBaseUrl) => {
+  const values = [
+    preferredBaseUrl,
+    ...DEFAULT_SKILL_PUBLISH_BASE_URLS,
+  ]
+    .map(normalizeApiBaseUrl)
+    .filter(Boolean);
+  return [...new Set(values)];
+};
+
+const isRetryableSkillRegistryError = (error) => {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    /Skill registry is disabled/iu.test(message) ||
+    /Failed query:/iu.test(message) ||
+    /failed with 5\d\d/iu.test(message)
+  );
+};
+
+const requestJsonWithBaseFallback = async (params) => {
+  const {
+    baseUrls,
+    endpointPath,
+    query,
+    method,
+    apiKey,
+    body,
+    signal,
+    maxRounds = 2,
+  } = params;
+
+  let lastError = null;
+  const candidateBaseUrls = [...new Set(baseUrls.map(normalizeApiBaseUrl).filter(Boolean))];
+
+  for (let round = 0; round < maxRounds; round += 1) {
+    for (const baseUrl of candidateBaseUrls) {
+      try {
+        const data = await requestJson({
+          method,
+          url: buildApiUrl(baseUrl, endpointPath, query),
+          apiKey,
+          body,
+          signal,
+        });
+        return { data, baseUrl };
+      } catch (error) {
+        lastError = error;
+        if (!isRetryableSkillRegistryError(error)) {
+          throw error;
+        }
+        stderr(
+          `Retryable registry error on ${baseUrl}${round + 1 < maxRounds ? '; trying alternate endpoint' : ''}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
+  }
+
+  throw lastError ?? new ActionError(`Unable to complete ${method} ${endpointPath}.`);
 };
 
 const parseEventPayload = async () => {
@@ -460,26 +526,32 @@ const run = async () => {
   stdout(`Validated skill package ${skillName}@${skillVersion} from ${skillDirInput}`);
   stdout(`Files: ${files.length}, Total bytes: ${totalBytes}`);
 
-  const quote = await requestJson({
+  const publishApiBaseUrls = buildCandidateApiBaseUrls(apiBaseUrl);
+  const quoteResult = await requestJsonWithBaseFallback({
+    baseUrls: publishApiBaseUrls,
+    endpointPath: '/skills/quote',
     method: 'POST',
-    url: buildApiUrl(apiBaseUrl, '/skills/quote'),
     apiKey,
     body: {
       files,
       ...(accountId ? { accountId } : {}),
     },
   });
+  const quote = quoteResult.data;
 
   const quoteId = String(quote?.quoteId ?? '').trim();
   if (!quoteId) {
     throw new ActionError('Quote response did not include quoteId.');
   }
 
-  stdout(`Quote complete: ${quoteId} (${quote.credits} credits, ${quote.estimatedCostHbar} HBAR est)`);
+  stdout(
+    `Quote complete via ${quoteResult.baseUrl}: ${quoteId} (${quote.credits} credits, ${quote.estimatedCostHbar} HBAR est)`,
+  );
 
-  const publish = await requestJson({
+  const publishResult = await requestJsonWithBaseFallback({
+    baseUrls: [quoteResult.baseUrl, ...publishApiBaseUrls],
+    endpointPath: '/skills/publish',
     method: 'POST',
-    url: buildApiUrl(apiBaseUrl, '/skills/publish'),
     apiKey,
     body: {
       files,
@@ -487,21 +559,25 @@ const run = async () => {
       ...(accountId ? { accountId } : {}),
     },
   });
+  const publish = publishResult.data;
+  const jobApiBaseUrl = publishResult.baseUrl;
 
   const jobId = String(publish?.jobId ?? '').trim();
   if (!jobId) {
     throw new ActionError('Publish response did not include jobId.');
   }
 
-  stdout(`Publish started: job ${jobId}`);
+  stdout(`Publish started via ${jobApiBaseUrl}: job ${jobId}`);
 
   const startedAt = Date.now();
   let lastStatus = '';
   let completedJob = null;
   while (Date.now() - startedAt < pollTimeoutMs) {
-    const job = await requestJson({
+    const { data: job } = await requestJsonWithBaseFallback({
+      baseUrls: [jobApiBaseUrl, ...publishApiBaseUrls],
+      endpointPath: `/skills/jobs/${encodeURIComponent(jobId)}`,
+      query: accountId ? { accountId } : null,
       method: 'GET',
-      url: buildApiUrl(apiBaseUrl, `/skills/jobs/${encodeURIComponent(jobId)}`, accountId ? { accountId } : null),
       apiKey,
     });
     const status = String(job?.status ?? '').trim();
