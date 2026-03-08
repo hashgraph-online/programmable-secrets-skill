@@ -161,7 +161,12 @@ const requestJson = async (params) => {
     apiKey,
     body,
     signal,
+    timeoutMs = 20000,
   } = params;
+  const timeoutSignal =
+    typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+      ? AbortSignal.timeout(timeoutMs)
+      : null;
   const response = await fetch(url, {
     method,
     headers: {
@@ -169,7 +174,7 @@ const requestJson = async (params) => {
       'x-api-key': apiKey,
     },
     ...(body ? { body: JSON.stringify(body) } : {}),
-    signal,
+    signal: signal ?? timeoutSignal ?? undefined,
   });
   if (!response.ok) {
     const bodySummary = await summarizeErrorBody(response);
@@ -209,6 +214,7 @@ const requestJsonWithBaseFallback = async (params) => {
     body,
     signal,
     maxRounds = 2,
+    timeoutMs = 20000,
   } = params;
 
   let lastError = null;
@@ -223,6 +229,7 @@ const requestJsonWithBaseFallback = async (params) => {
           apiKey,
           body,
           signal,
+          timeoutMs,
         });
         return { data, baseUrl };
       } catch (error) {
