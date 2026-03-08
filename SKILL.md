@@ -15,6 +15,12 @@ Core repository:
 Live app:
 - https://ps.hol.org
 
+Canonical UAID specification:
+- HCS-14 (pinned): https://github.com/hiero-ledger/hiero-consensus-specifications/blob/675f6d06450c72c63f52191eb090e7b2bdbb405c/docs/standards/hcs-14.md
+
+Wallet-backed UAIDs in this stack should use the HCS-14 + `standards-sdk` form:
+- `uaid:did:pkh:eip155:<chainId>:<checksumAddress>;nativeId=eip155:<chainId>:<checksumAddress>`
+
 Primary CLI entrypoint:
 ```bash
 npx programmable-secret help
@@ -95,7 +101,7 @@ Operate datasets:
 npx programmable-secret datasets list
 npx programmable-secret datasets get --dataset-id 1
 npx programmable-secret datasets export --dataset-id 1 --output dataset-1.json
-npx programmable-secret datasets register --provider-uaid "did:uaid:hol:quantlab?uid=quantlab&registry=hol&proto=hol&nativeId=quantlab" --metadata-json '{"title":"TSLA feed"}' --ciphertext "encrypted payload" --key-material "wrapped key"
+npx programmable-secret datasets register --provider-uaid "uaid:did:pkh:eip155:46630:0x1111111111111111111111111111111111111111;nativeId=eip155:46630:0x1111111111111111111111111111111111111111" --metadata-json '{"title":"TSLA feed"}' --ciphertext "encrypted payload" --key-material "wrapped key"
 npx programmable-secret datasets import --file dataset-1.json --preview
 npx programmable-secret datasets set-active --dataset-id 1 --active false
 ```
