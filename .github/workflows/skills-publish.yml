@@ -98,7 +98,7 @@ jobs:
             API_BASE_URL="${{ secrets.RB_BASE_URL }}"
           fi
           if [[ -z "$API_BASE_URL" ]]; then
-            API_BASE_URL="https://hol.org/registry/api/v1"
+            API_BASE_URL="https://registry.hashgraphonline.com/api/v1"
           fi
           echo "api_base_url=$API_BASE_URL" >> "$GITHUB_OUTPUT"
       - name: Publish skill package

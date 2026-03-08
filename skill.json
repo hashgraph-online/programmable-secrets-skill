@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/hashgraph-online/programmable-secrets-skill/main/schemas/skill.schema.json",
   "name": "programmable-secrets",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Operate Programmable Secrets dataset registration, policy creation, purchase, receipt verification, and UAID-gated access workflows for Robinhood Chain Testnet and Arbitrum Sepolia.",
   "homepage": "https://ps.hol.org",
   "author": "Hashgraph Online <hello@hashgraphonline.com>",
