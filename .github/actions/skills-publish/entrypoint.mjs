@@ -534,40 +534,68 @@ const run = async () => {
   stdout(`Files: ${files.length}, Total bytes: ${totalBytes}`);
 
   const publishApiBaseUrls = buildCandidateApiBaseUrls(apiBaseUrl);
-  const quoteResult = await requestJsonWithBaseFallback({
-    baseUrls: publishApiBaseUrls,
-    endpointPath: '/skills/quote',
-    method: 'POST',
-    apiKey,
-    body: {
-      files,
-      ...(accountId ? { accountId } : {}),
-    },
-  });
-  const quote = quoteResult.data;
+  let quote = null;
+  let publish = null;
+  let quoteId = '';
+  let jobApiBaseUrl = '';
+  let lastPublishError = null;
 
-  const quoteId = String(quote?.quoteId ?? '').trim();
-  if (!quoteId) {
-    throw new ActionError('Quote response did not include quoteId.');
+  for (let round = 0; round < 2 && !publish; round += 1) {
+    for (const baseUrl of publishApiBaseUrls) {
+      try {
+        const quoteResult = await requestJsonWithBaseFallback({
+          baseUrls: [baseUrl],
+          endpointPath: '/skills/quote',
+          method: 'POST',
+          apiKey,
+          body: {
+            files,
+            ...(accountId ? { accountId } : {}),
+          },
+          maxRounds: 1,
+        });
+        quote = quoteResult.data;
+        quoteId = String(quote?.quoteId ?? '').trim();
+        if (!quoteId) {
+          throw new ActionError('Quote response did not include quoteId.');
+        }
+
+        stdout(
+          `Quote complete via ${baseUrl}: ${quoteId} (${quote.credits} credits, ${quote.estimatedCostHbar} HBAR est)`,
+        );
+
+        const publishResult = await requestJsonWithBaseFallback({
+          baseUrls: [baseUrl],
+          endpointPath: '/skills/publish',
+          method: 'POST',
+          apiKey,
+          body: {
+            files,
+            quoteId,
+            ...(accountId ? { accountId } : {}),
+          },
+          maxRounds: 1,
+        });
+        publish = publishResult.data;
+        jobApiBaseUrl = baseUrl;
+        break;
+      } catch (error) {
+        lastPublishError = error;
+        if (!isRetryableSkillRegistryError(error)) {
+          throw error;
+        }
+        stderr(
+          `Retryable quote/publish pipeline error on ${baseUrl}${round < 1 ? '; trying alternate endpoint' : ''}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
   }
 
-  stdout(
-    `Quote complete via ${quoteResult.baseUrl}: ${quoteId} (${quote.credits} credits, ${quote.estimatedCostHbar} HBAR est)`,
-  );
-
-  const publishResult = await requestJsonWithBaseFallback({
-    baseUrls: [quoteResult.baseUrl, ...publishApiBaseUrls],
-    endpointPath: '/skills/publish',
-    method: 'POST',
-    apiKey,
-    body: {
-      files,
-      quoteId,
-      ...(accountId ? { accountId } : {}),
-    },
-  });
-  const publish = publishResult.data;
-  const jobApiBaseUrl = publishResult.baseUrl;
+  if (!publish) {
+    throw lastPublishError ?? new ActionError('Unable to complete skill publish.');
+  }
 
   const jobId = String(publish?.jobId ?? '').trim();
   if (!jobId) {
