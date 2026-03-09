@@ -21,6 +21,9 @@ on:
       api-base-url:
         description: Optional broker API override
         required: false
+      request-timeout-ms:
+        description: Optional per-request HTTP timeout override
+        required: false
 
 jobs:
   publish:
@@ -110,5 +113,6 @@ jobs:
           skill-dir: ${{ steps.package.outputs.dir }}
           name: ${{ steps.vars.outputs.name }}
           version: ${{ steps.vars.outputs.version }}
+          request-timeout-ms: ${{ github.event.inputs.request-timeout-ms || '120000' }}
           annotate: "true"
           github-token: ${{ github.token }}

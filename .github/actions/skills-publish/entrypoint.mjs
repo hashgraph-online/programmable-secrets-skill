@@ -167,15 +167,23 @@ const requestJson = async (params) => {
     typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
       ? AbortSignal.timeout(timeoutMs)
       : null;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-    signal: signal ?? timeoutSignal ?? undefined,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method,
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+      signal: signal ?? timeoutSignal ?? undefined,
+    });
+  } catch (error) {
+    if (error && typeof error === 'object' && error.name === 'TimeoutError') {
+      throw new ActionError(`${method} ${url} timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  }
   if (!response.ok) {
     const bodySummary = await summarizeErrorBody(response);
     throw new ActionError(
@@ -199,7 +207,9 @@ const isRetryableSkillRegistryError = (error) => {
   const message = error instanceof Error ? error.message : String(error);
   return (
     /Skill registry is disabled/iu.test(message) ||
+    /Skill registry temporarily unavailable/iu.test(message) ||
     /Failed query:/iu.test(message) ||
+    /timed out after \d+ms/iu.test(message) ||
     /failed with 5\d\d/iu.test(message)
   );
 };
@@ -405,6 +415,7 @@ const run = async () => {
   const stampRepoCommit = toBoolean(getEnv('INPUT_STAMP_REPO_COMMIT'), true);
   const pollTimeoutMs = parseNumber(getEnv('INPUT_POLL_TIMEOUT_MS'), 720000);
   const pollIntervalMs = parseNumber(getEnv('INPUT_POLL_INTERVAL_MS'), 4000);
+  const requestTimeoutMs = parseNumber(getEnv('INPUT_REQUEST_TIMEOUT_MS'), 120000);
   const shouldAnnotate = toBoolean(getEnv('INPUT_ANNOTATE'), true);
   const githubToken = getEnv('INPUT_GITHUB_TOKEN');
 
@@ -490,11 +501,15 @@ const run = async () => {
     throw new ActionError('skill.json must include description.');
   }
 
-  const config = await requestJson({
+  const configBaseUrls = buildCandidateApiBaseUrls(apiBaseUrl);
+  const { data: config, baseUrl: configBaseUrl } = await requestJsonWithBaseFallback({
+    baseUrls: configBaseUrls,
+    endpointPath: '/skills/config',
     method: 'GET',
-    url: buildApiUrl(apiBaseUrl, '/skills/config'),
     apiKey,
+    timeoutMs: requestTimeoutMs,
   });
+  stdout(`Loaded skill registry config via ${configBaseUrl}`);
   const maxFiles = Number(config?.maxFiles ?? 0);
   const maxTotalSizeBytes = Number(config?.maxTotalSizeBytes ?? 0);
   const allowedMimeTypes = Array.isArray(config?.allowedMimeTypes)
@@ -553,6 +568,7 @@ const run = async () => {
             ...(accountId ? { accountId } : {}),
           },
           maxRounds: 1,
+          timeoutMs: requestTimeoutMs,
         });
         quote = quoteResult.data;
         quoteId = String(quote?.quoteId ?? '').trim();
@@ -575,6 +591,7 @@ const run = async () => {
             ...(accountId ? { accountId } : {}),
           },
           maxRounds: 1,
+          timeoutMs: requestTimeoutMs,
         });
         publish = publishResult.data;
         jobApiBaseUrl = baseUrl;
@@ -614,6 +631,7 @@ const run = async () => {
       query: accountId ? { accountId } : null,
       method: 'GET',
       apiKey,
+      timeoutMs: requestTimeoutMs,
     });
     const status = String(job?.status ?? '').trim();
     if (status && status !== lastStatus) {

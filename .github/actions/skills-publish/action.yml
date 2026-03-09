@@ -33,6 +33,10 @@ inputs:
     description: "Publish job poll interval in milliseconds"
     required: false
     default: "4000"
+  request-timeout-ms:
+    description: "Per-request HTTP timeout in milliseconds"
+    required: false
+    default: "120000"
   annotate:
     description: "When true, posts results to release notes or merged PR"
     required: false
@@ -88,6 +92,7 @@ runs:
         INPUT_STAMP_REPO_COMMIT: ${{ inputs.stamp-repo-commit }}
         INPUT_POLL_TIMEOUT_MS: ${{ inputs.poll-timeout-ms }}
         INPUT_POLL_INTERVAL_MS: ${{ inputs.poll-interval-ms }}
+        INPUT_REQUEST_TIMEOUT_MS: ${{ inputs.request-timeout-ms }}
         INPUT_ANNOTATE: ${{ inputs.annotate }}
         INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
       run: node "${{ github.action_path }}/entrypoint.mjs"
