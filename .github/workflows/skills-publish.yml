@@ -109,7 +109,7 @@ jobs:
         with:
           api-base-url: ${{ steps.target.outputs.api_base_url }}
           api-key: ${{ secrets.RB_API_KEY }}
-          account-id: ${{ secrets.RB_ACCOUNT_ID }}
+          account-id: 0.0.992384
           skill-dir: ${{ steps.package.outputs.dir }}
           name: ${{ steps.vars.outputs.name }}
           version: ${{ steps.vars.outputs.version }}
