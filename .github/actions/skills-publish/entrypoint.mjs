@@ -99,18 +99,38 @@ const resolveRole = (filePath) => {
   return 'file';
 };
 
+const BLOCKED_PATH_SEGMENTS = new Set([
+  '.git',
+  '.github',
+  'node_modules',
+  '.next',
+  'dist',
+  'build',
+  'coverage',
+]);
+
+const shouldSkipPath = (relativePath) => {
+  const segments = String(relativePath ?? '')
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  return segments.some(
+    (segment) => BLOCKED_PATH_SEGMENTS.has(segment) || segment.startsWith('.'),
+  );
+};
+
 const walkFiles = async (rootDir, relativeDir = '') => {
   const fullDir = relativeDir ? path.join(rootDir, relativeDir) : rootDir;
   const entries = await readdir(fullDir, { withFileTypes: true });
   const files = [];
 
   for (const entry of entries) {
-    if (entry.name === '.git') {
-      continue;
-    }
     const childRelative = relativeDir
       ? path.posix.join(relativeDir, entry.name)
       : entry.name;
+    if (shouldSkipPath(childRelative)) {
+      continue;
+    }
     const childFullPath = path.join(rootDir, childRelative);
     if (entry.isDirectory()) {
       const nested = await walkFiles(rootDir, childRelative);
