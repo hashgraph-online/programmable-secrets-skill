@@ -31,7 +31,6 @@ const parseNumber = (value, fallback) => {
 
 const DEFAULT_API_BASE_URL = 'https://hol.org/registry/api/v1';
 const DEFAULT_SKILL_PUBLISH_BASE_URLS = [
-  'https://registry.hashgraphonline.com/api/v1',
   'https://hol.org/registry/api/v1',
 ];
 
