@@ -194,12 +194,12 @@ const requestJson = async (params) => {
 };
 
 const buildCandidateApiBaseUrls = (preferredBaseUrl) => {
-  const values = [
-    preferredBaseUrl,
-    ...DEFAULT_SKILL_PUBLISH_BASE_URLS,
-  ]
-    .map(normalizeApiBaseUrl)
-    .filter(Boolean);
+  const normalizedPreferred = normalizeApiBaseUrl(preferredBaseUrl);
+  const values = normalizedPreferred
+    ? [normalizedPreferred]
+    : DEFAULT_SKILL_PUBLISH_BASE_URLS
+        .map(normalizeApiBaseUrl)
+        .filter(Boolean);
   return [...new Set(values)];
 };
 
